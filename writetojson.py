@@ -1,24 +1,16 @@
 from __future__ import division
-
 from models import *
 from utils.utils import *
 from utils.datasets import *
-
 import os
-import sys
 import time
 import datetime
 import argparse
 import json
-import numpy
-
 from PIL import Image
-
 import torch
 from torch.utils.data import DataLoader
-from torchvision import datasets
 from torch.autograd import Variable
-
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.ticker import NullLocator
@@ -26,7 +18,8 @@ from matplotlib.ticker import NullLocator
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--image_folder", type=str, default="data/custom/test_image", help="path to dataset")
-    parser.add_argument("--model_def", type=str, default="config/yolov3-custom.cfg", help="path to model definition file")
+    parser.add_argument("--model_def", type=str, default="config/yolov3-custom.cfg",
+                        help="path to model definition file")
     # parser.add_argument("--weights_path", type=str, default="weights/yolov3.weights", help="path to weights file")
     parser.add_argument("--class_path", type=str, default="data/custom/classes.names", help="path to class label file")
     parser.add_argument("--conf_thres", type=float, default=0.8, help="object confidence threshold")
@@ -34,7 +27,8 @@ if __name__ == "__main__":
     parser.add_argument("--batch_size", type=int, default=1, help="size of the batches")
     parser.add_argument("--n_cpu", type=int, default=0, help="number of cpu threads to use during batch generation")
     parser.add_argument("--img_size", type=int, default=416, help="size of each image dimension")
-    parser.add_argument("--checkpoint_model", type=str, default="checkpoints/yolov3_ckpt_70.pth", help="path to checkpoint model")
+    parser.add_argument("--checkpoint_model", type=str, default="checkpoints/yolov3_ckpt_70.pth",
+                        help="path to checkpoint model")
     opt = parser.parse_args()
     print(opt)
 
@@ -53,8 +47,6 @@ if __name__ == "__main__":
     model.load_state_dict(torch.load(opt.checkpoint_model))
 
     model.eval()  # Set in evaluation mode
-
-    
 
     dataloader = DataLoader(
         ImageFolder(opt.image_folder, img_size=opt.img_size),
@@ -122,10 +114,9 @@ if __name__ == "__main__":
             n_cls_preds = len(unique_labels)
             bbox_colors = random.sample(colors, n_cls_preds)
 
-            Dictionary = {"bbox":[],"score":[],"label":[]}
+            Dictionary = {"bbox": [], "score": [], "label": []}
 
             for x1, y1, x2, y2, conf, cls_conf, cls_pred in detections:
-
                 print("\t+ Label: %s, Conf: %.5f" % (classes[int(cls_pred)], cls_conf.item()))
 
                 box_w = x2 - x1
@@ -156,7 +147,6 @@ if __name__ == "__main__":
 
         List.append(Dictionary)
 
-
         # Save generated image with detections
         plt.axis("off")
         plt.gca().xaxis.set_major_locator(NullLocator())
@@ -165,7 +155,7 @@ if __name__ == "__main__":
         plt.savefig(f"output_test2/{filename}.png", bbox_inches="tight", pad_inches=0.0)
         plt.close()
 
-    with open('0856052_3.json', 'a') as f:  # writing JSON object
+    with open('0856052.json', 'a') as f:  # writing JSON object
         json.dump(List, f)
         # json_string = json.dumps(',')
         # f.write(",")
